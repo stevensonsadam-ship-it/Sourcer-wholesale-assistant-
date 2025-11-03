@@ -1,0 +1,183 @@
+diff --git a/sintrix_wholesale_estimator/data/comp_pool.json b/sintrix_wholesale_estimator/data/comp_pool.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..17ce8065d9b289410c5b050eff81ed6f58342e67
+--- /dev/null
++++ b/sintrix_wholesale_estimator/data/comp_pool.json
+@@ -0,0 +1,177 @@
++{
++  "Austin, TX": [
++    {
++      "address": "1503 Barton Springs Rd",
++      "postal_code": "78704",
++      "sold_price": 765000,
++      "sold_date": "2024-04-12",
++      "square_feet": 1850,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 0.9,
++      "dom": 21
++    },
++    {
++      "address": "2105 S 5th St",
++      "postal_code": "78704",
++      "sold_price": 812000,
++      "sold_date": "2024-03-22",
++      "square_feet": 1985,
++      "beds": 4,
++      "baths": 2.5,
++      "distance_miles": 1.2,
++      "dom": 34
++    },
++    {
++      "address": "805 W Mary St",
++      "postal_code": "78704",
++      "sold_price": 698500,
++      "sold_date": "2024-02-10",
++      "square_feet": 1720,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 1.0,
++      "dom": 27
++    }
++  ],
++  "Atlanta, GA": [
++    {
++      "address": "642 Ormewood Ave SE",
++      "postal_code": "30312",
++      "sold_price": 512000,
++      "sold_date": "2024-05-18",
++      "square_feet": 1904,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 1.3,
++      "dom": 30
++    },
++    {
++      "address": "394 Memorial Dr SE",
++      "postal_code": "30312",
++      "sold_price": 478000,
++      "sold_date": "2024-03-02",
++      "square_feet": 1750,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 0.8,
++      "dom": 45
++    },
++    {
++      "address": "765 Vernon Ave SE",
++      "postal_code": "30316",
++      "sold_price": 489500,
++      "sold_date": "2024-01-27",
++      "square_feet": 1825,
++      "beds": 4,
++      "baths": 2,
++      "distance_miles": 1.6,
++      "dom": 38
++    }
++  ],
++  "Phoenix, AZ": [
++    {
++      "address": "4550 E Calle Ventura",
++      "postal_code": "85018",
++      "sold_price": 710000,
++      "sold_date": "2024-06-07",
++      "square_feet": 2012,
++      "beds": 4,
++      "baths": 2.5,
++      "distance_miles": 1.1,
++      "dom": 29
++    },
++    {
++      "address": "4328 N 43rd St",
++      "postal_code": "85018",
++      "sold_price": 645000,
++      "sold_date": "2024-04-30",
++      "square_feet": 1884,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 0.9,
++      "dom": 33
++    },
++    {
++      "address": "3327 N 47th Pl",
++      "postal_code": "85018",
++      "sold_price": 686500,
++      "sold_date": "2024-02-17",
++      "square_feet": 1940,
++      "beds": 4,
++      "baths": 2,
++      "distance_miles": 1.4,
++      "dom": 40
++    }
++  ],
++  "Cleveland, OH": [
++    {
++      "address": "1840 W 50th St",
++      "postal_code": "44102",
++      "sold_price": 324000,
++      "sold_date": "2024-05-04",
++      "square_feet": 1680,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 1.5,
++      "dom": 37
++    },
++    {
++      "address": "5403 Herman Ave",
++      "postal_code": "44102",
++      "sold_price": 298500,
++      "sold_date": "2024-03-15",
++      "square_feet": 1512,
++      "beds": 3,
++      "baths": 1.5,
++      "distance_miles": 1.1,
++      "dom": 49
++    },
++    {
++      "address": "4806 Franklin Blvd",
++      "postal_code": "44102",
++      "sold_price": 312750,
++      "sold_date": "2024-01-22",
++      "square_feet": 1628,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 1.8,
++      "dom": 58
++    }
++  ],
++  "Tampa, FL": [
++    {
++      "address": "2011 E 5th Ave",
++      "postal_code": "33605",
++      "sold_price": 438000,
++      "sold_date": "2024-04-26",
++      "square_feet": 1760,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 1.2,
++      "dom": 32
++    },
++    {
++      "address": "1204 E Columbus Dr",
++      "postal_code": "33605",
++      "sold_price": 421500,
++      "sold_date": "2024-02-29",
++      "square_feet": 1684,
++      "beds": 3,
++      "baths": 2,
++      "distance_miles": 0.7,
++      "dom": 35
++    },
++    {
++      "address": "1812 N 15th St",
++      "postal_code": "33605",
++      "sold_price": 409250,
++      "sold_date": "2024-01-18",
++      "square_feet": 1608,
++      "beds": 3,
++      "baths": 1.5,
++      "distance_miles": 1.5,
++      "dom": 41
++    }
++  ]
++}

@@ -1,0 +1,12 @@
+zip_prefix,multiplier,dom_days,discount_trend,label
+770,0.90,35,-0.02,Houston area
+900,1.25,42,-0.03,Los Angeles area
+100,1.15,45,-0.025,New York area
+600,1.10,38,-0.015,Chicago area
+330,0.85,32,-0.018,Cleveland area
+750,0.92,33,-0.020,Dallas area
+021,1.20,48,-0.028,Boston area
+941,1.18,40,-0.022,San Francisco area
+980,1.22,44,-0.024,Seattle area
+330,0.88,30,-0.016,Miami area
+default,1.00,30,-0.01,National average
