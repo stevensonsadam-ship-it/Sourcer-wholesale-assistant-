@@ -1,4 +1,8 @@
 {
+  "buildCommand": "cd expo-app && npm install && npm run build:web",
+  "outputDirectory": "expo-app/dist",
+  "installCommand": "cd expo-app && npm install",
+  "framework": null,
   "rewrites": [
     {
       "source": "/(.*)",
