@@ -1,0 +1,17 @@
+# Ignore unnecessary files for Vercel deployment
+node_modules
+.expo
+.expo-shared
+backend
+lib
+test
+android
+ios
+linux
+build
+*.log
+.DS_Store
+.git
+.vscode
+*.md
+!README.md
