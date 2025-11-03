@@ -40,6 +40,7 @@ export default function App() {
   const [url, setUrl] = useState("");
   const [address, setAddress] = useState("");
   const [zipcode, setZipcode] = useState("77033");
+  const [listPrice, setListPrice] = useState(""); // Current listing price
   const [arv, setArv] = useState("250000");
   const [fee, setFee] = useState("5000");
   const [sqft, setSqft] = useState("1500");
@@ -240,18 +241,18 @@ export default function App() {
           <View style={styles.spacer} />
           <TextInput
             style={[styles.input, styles.flex1]}
-            placeholder="ARV ($) *"
-            value={arv}
-            onChangeText={setArv}
+            placeholder="List Price ($)"
+            value={listPrice}
+            onChangeText={setListPrice}
             keyboardType="numeric"
           />
         </View>
         <View style={styles.row}>
           <TextInput
             style={[styles.input, styles.flex1]}
-            placeholder="Square Feet"
-            value={sqft}
-            onChangeText={setSqft}
+            placeholder="ARV ($) *"
+            value={arv}
+            onChangeText={setArv}
             keyboardType="numeric"
           />
           <View style={styles.spacer} />
@@ -263,6 +264,13 @@ export default function App() {
             keyboardType="numeric"
           />
         </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Square Feet"
+          value={sqft}
+          onChangeText={setSqft}
+          keyboardType="numeric"
+        />
         
         <Text style={styles.label}>Factor: {factor.toFixed(2)} (range: 0.55 - 0.75)</Text>
         <View style={styles.sliderContainer}>
@@ -368,6 +376,27 @@ export default function App() {
       {/* Offer Range */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Offer Range (MAO = ARV × Factor − Repairs − Fee)</Text>
+        
+        {/* Warning if MAO exceeds list price */}
+        {listPrice && parseFloat(listPrice) > 0 && recommended > parseFloat(listPrice) && (
+          <View style={styles.warningBox}>
+            <Text style={styles.warningText}>
+              ⚠️ Warning: Your recommended offer ({formatMoney(recommended)}) is higher than the list price ({formatMoney(parseFloat(listPrice))})!
+              {"\n"}• Check ARV - should be AFTER REPAIR value (higher than list)
+              {"\n"}• Adjust Factor down (currently {(factor * 100).toFixed(0)}%)
+              {"\n"}• Verify repair costs aren't too low
+            </Text>
+          </View>
+        )}
+        
+        {/* Show list price comparison */}
+        {listPrice && parseFloat(listPrice) > 0 && (
+          <View style={styles.comparisonRow}>
+            <Text style={styles.comparisonLabel}>List Price:</Text>
+            <Text style={styles.comparisonValue}>{formatMoney(parseFloat(listPrice))}</Text>
+          </View>
+        )}
+        
         <View style={[styles.offerCard, styles.aggressive]}>
           <Text style={styles.offerLabel}>Aggressive</Text>
           <Text style={styles.offerAmount}>{formatMoney(aggressive)}</Text>
@@ -384,6 +413,22 @@ export default function App() {
           <Text style={styles.totalLabel}>Recommended (by risk slider)</Text>
           <Text style={styles.totalAmount}>{formatMoney(recommended)}</Text>
         </View>
+        
+        {/* Show discount from list price */}
+        {listPrice && parseFloat(listPrice) > 0 && (
+          <View style={styles.discountRow}>
+            <Text style={styles.discountLabel}>
+              {recommended < parseFloat(listPrice) ? "✓ Below List by:" : "❌ Above List by:"}
+            </Text>
+            <Text style={[
+              styles.discountValue,
+              recommended < parseFloat(listPrice) ? styles.discountGood : styles.discountBad
+            ]}>
+              {formatMoney(Math.abs(parseFloat(listPrice) - recommended))} 
+              ({Math.abs(((parseFloat(listPrice) - recommended) / parseFloat(listPrice)) * 100).toFixed(1)}%)
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Negotiation Scripts */}
@@ -689,5 +734,63 @@ const styles = StyleSheet.create({
   },
   chipTextSelected: {
     color: "#fff",
+  },
+  warningBox: {
+    backgroundColor: "#fff3cd",
+    borderLeftWidth: 4,
+    borderLeftColor: "#ff9800",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  warningText: {
+    color: "#856404",
+    fontSize: 13,
+    lineHeight: 20,
+  },
+  comparisonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  comparisonLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#666",
+  },
+  comparisonValue: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  discountRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+  discountLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#666",
+  },
+  discountValue: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  discountGood: {
+    color: "#4caf50",
+  },
+  discountBad: {
+    color: "#f44336",
   },
 });
