@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() => runApp(const SourcerApp());
 
@@ -34,6 +36,12 @@ class _SourcerHomeState extends State<SourcerHome> {
   final zipCtrl  = TextEditingController(text: '77033'); // Houston example
   final arvCtrl  = TextEditingController(text: '250000');
   final feeCtrl  = TextEditingController(text: '5000');
+  
+  // Property details (for manual entry or auto-fill from scraping)
+  final sqftCtrl = TextEditingController(text: '1500');
+  final bedsCtrl = TextEditingController(text: '3');
+  final bathsCtrl = TextEditingController(text: '2');
+  final yearCtrl = TextEditingController(text: '1980');
 
   double factor = 0.65;              // MAO factor (0.55–0.75)
   double risk   = 0.50;              // 0 (safe) .. 1 (aggressive)
@@ -127,41 +135,102 @@ class _SourcerHomeState extends State<SourcerHome> {
         padding: const EdgeInsets.all(16),
         children: [
           _section('Deal input', [
-            TextField(controller: urlCtrl, decoration: const InputDecoration(labelText: 'Listing URL (Zillow/Redfin/etc)')),
+            TextField(controller: urlCtrl, decoration: const InputDecoration(
+              labelText: 'Listing URL (Zillow/Redfin/etc)',
+              hintText: 'Paste URL or fill property details below'
+            )),
             const SizedBox(height: 12),
             TextField(controller: addrCtrl, decoration: const InputDecoration(labelText: 'Address (optional)')),
             const SizedBox(height: 12),
+            
+            // Property details row
+            const Text('Property Details', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+            const SizedBox(height: 8),
             Row(children: [
+              Expanded(child: TextField(
+                controller: sqftCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Square Feet *'),
+                onChanged: (_) => setState((){}),
+              )),
+              const SizedBox(width: 8),
+              Expanded(child: TextField(
+                controller: bedsCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Beds *'),
+                onChanged: (_) => setState((){}),
+              )),
+              const SizedBox(width: 8),
+              Expanded(child: TextField(
+                controller: bathsCtrl,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Baths *'),
+                onChanged: (_) => setState((){}),
+              )),
+            ]),
+            const SizedBox(height: 12),
+            
+            Row(children: [
+              Expanded(child: TextField(
+                controller: yearCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Year Built'),
+                onChanged: (_) => setState((){}),
+              )),
+              const SizedBox(width: 12),
               Expanded(child: TextField(
                 controller: zipCtrl,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'ZIP *'),
               )),
-              const SizedBox(width: 12),
+            ]),
+            const SizedBox(height: 12),
+            
+            Row(children: [
               Expanded(child: TextField(
                 controller: arvCtrl,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(labelText: 'ARV (\$) *'),
                 onChanged: (_) => setState((){}),
               )),
-            ]),
-            const SizedBox(height: 12),
-            Row(children: [
+              const SizedBox(width: 12),
               Expanded(child: TextField(
                 controller: feeCtrl,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(labelText: 'Assignment fee (\$)'),
+                decoration: const InputDecoration(labelText: 'Assignment Fee (\$)'),
                 onChanged: (_) => setState((){}),
               )),
-              const SizedBox(width: 12),
-              Expanded(child: _factorSlider()),
             ]),
+            const SizedBox(height: 12),
+            _factorSlider(),
             const SizedBox(height: 8),
             _riskSlider(),
             const SizedBox(height: 8),
             Text(
               'Market signals: ${rates.label} • DOM ~${rates.domDays} days • price trend ${(rates.discountTrend*100).toStringAsFixed(1)}%/mo',
               style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+          ]),
+
+          const SizedBox(height: 16),
+          _section('Auto-estimate from listing', [
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () => _autoEstimateFromUrl(),
+                    icon: const Icon(Icons.auto_awesome), 
+                    label: const Text('Auto-estimate repairs'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              urlCtrl.text.isNotEmpty 
+                ? '✓ Will scrape Zillow URL + use property details above'
+                : '✓ Using property details above (manual entry)',
+              style: TextStyle(fontSize: 12, color: Colors.grey[700], fontStyle: FontStyle.italic),
             ),
           ]),
 
@@ -364,6 +433,100 @@ class _SourcerHomeState extends State<SourcerHome> {
 
   void _snack(BuildContext ctx, String msg) {
     ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Future<void> _autoEstimateFromUrl() async {
+    // Can work with URL or manual entry
+    if (urlCtrl.text.isEmpty && sqftCtrl.text.isEmpty) {
+      _snack(context, 'Please enter a listing URL or property details');
+      return;
+    }
+
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // Call backend API to estimate from Zillow URL
+      const apiUrl = 'http://localhost:3000/api/estimateFromZillow';
+      
+      // Send manual property details to backend
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'url': urlCtrl.text,
+          'zipcode': zipCtrl.text,
+          'sqft': int.tryParse(sqftCtrl.text) ?? 1500,
+          'bedrooms': int.tryParse(bedsCtrl.text) ?? 3,
+          'bathrooms': double.tryParse(bathsCtrl.text) ?? 2.0,
+          'yearBuilt': int.tryParse(yearCtrl.text) ?? 1980,
+          'dealId': DateTime.now().millisecondsSinceEpoch.toString(),
+        }),
+      );
+
+      if (mounted) Navigator.of(context).pop();
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> apiItems = data['items'] ?? [];
+        
+        // Convert API response to RepairItems
+        final estimatedItems = apiItems.map((item) {
+          return RepairItem(
+            item['label'] ?? 'Unknown item',
+            'AI estimated',
+            1.0,
+            (item['amount'] ?? 0).toDouble(),
+          );
+        }).toList();
+
+        setState(() {
+          items = estimatedItems;
+          // Optionally update ARV if provided by API
+          if (data['arv'] != null) {
+            arvCtrl.text = data['arv'].toString();
+          }
+        });
+
+        _snack(context, 'Auto-estimated ${estimatedItems.length} repair items from Zillow listing');
+      } else {
+        _snack(context, 'API error: ${response.statusCode}. Using fallback estimates.');
+        _useFallbackEstimates();
+      }
+    } catch (e) {
+      if (mounted) Navigator.of(context).pop();
+      _snack(context, 'Could not connect to backend. Using fallback estimates.');
+      _useFallbackEstimates();
+    }
+  }
+
+  void _useFallbackEstimates() {
+    // Fallback: Generate mock AI-estimated repairs based on ZIP and URL
+    final mockEstimatedItems = <RepairItem>[
+      RepairItem('Interior paint (AI est.)', '1200 sqft', 1.2, 2.10),
+      RepairItem('Flooring (AI est.)', '1100 sqft', 1.1, 3.50),
+      RepairItem('Kitchen (AI est.)', 'full refresh', 1, 7200),
+      RepairItem('Bathrooms (AI est.)', '2 full', 1, 5100),
+      RepairItem('Roof (AI est.)', 'repair/patch', 1, 2800),
+      RepairItem('HVAC (AI est.)', 'service', 1, 750),
+      RepairItem('Electrical (AI est.)', 'misc', 1, 1650),
+      RepairItem('Landscaping (AI est.)', 'cleanup', 1, 900),
+      RepairItem('Contingency (AI est.)', '10%', 1, 2200),
+    ];
+
+    // Apply ZIP multiplier
+    final r = _rateForZip(zipCtrl.text).multiplier;
+    final adjusted = mockEstimatedItems
+        .map((e) => e.copyWith(unitCost: e.unitCost * r))
+        .toList();
+
+    setState(() {
+      items = adjusted;
+    });
   }
 }
 

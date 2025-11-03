@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Sourcer",
+    "slug": "sourcer-expo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sourcer.wholesale"
+    },
+    "android": {
+      "package": "com.sourcer.wholesale"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-asset"
+    ]
+  }
+}
